@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fun Study Game</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+/* ── CSS Variables ─────────────────────────────────────────── */
+:root {
+  --bg: #f0f8ff;
+  --fg: #1a1a2e;
+  --accent: #4a90d9;
+  --accent2: #e74c8b;
+  --card: #ffffff;
+  --card-border: #dce8f8;
+  --btn: #ffffff;
+  --btn-fg: #1a1a2e;
+  --btn-hover: #dce8f8;
+  --input-bg: #ffffff;
+  --input-fg: #1a1a2e;
+  --shadow: 0 4px 20px rgba(74,144,217,0.15);
+  --radius: 16px;
+  --wallpaper: none;
+}
+body.dark {
+  --bg: #0d0d1a;
+  --fg: #e8e8ff;
+  --accent: #cc44ff;
+  --accent2: #ff6eb4;
+  --card: #1e1e3a;
+  --card-border: #2e2e5a;
+  --btn: #1e1e3a;
+  --btn-fg: #e8e8ff;
+  --btn-hover: #2e2e5a;
+  --input-bg: #1e1e3a;
+  --input-fg: #e8e8ff;
+  --shadow: 0 4px 20px rgba(204,68,255,0.2);
+}
+
+/* ── Base ──────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background-color: var(--bg);
+  color: var(--fg);
+  min-height: 100vh;
+  transition: background-color 0.3s, color 0.3s;
+  background-image: var(--wallpaper);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* ── Top Controls ──────────────────────────────────────────── */
+#top-controls {
+  position: fixed;
+  top: 12px; right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 999;
+}
+.ctrl-btn {
+  background: var(--card);
+  color: var(--fg);
+  border: 2px solid var(--card-border);
+  border-radius: 30px;
+  padding: 6px 14px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  box-shadow: var(--shadow);
+}
+.ctrl-btn:hover { background: var(--btn-hover); transform: scale(1.04); }
+.ctrl-btn.music-on { color: var(--accent); border-color: var(--accent); }
+
+/* ── Screen System ─────────────────────────────────────────── */
+.screen {
+  display: none;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 80px 20px 40px;
+  animation: fadeIn 0.35s ease;
+}
+.screen.active { display: flex; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Card ──────────────────────────────────────────────────── */
+.card {
+  background: var(--card);
+  border: 2px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 36px 32px;
+  width: 100%;
+  max-width: 580px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(8px);
+}
+
+/* ── Typography ────────────────────────────────────────────── */
+h1 { font-family: 'Fredoka One', cursive; font-size: 2.4rem; color: var(--accent); line-height: 1.1; }
+h2 { font-family: 'Fredoka One', cursive; font-size: 1.7rem; color: var(--accent); margin-bottom: 8px; }
+h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; color: var(--fg); }
+p  { font-size: 1rem; line-height: 1.6; color: var(--fg); }
+.subtitle { font-size: 1rem; color: var(--fg); opacity: 0.7; margin-bottom: 24px; }
+
+/* ── Buttons ───────────────────────────────────────────────── */
+.btn {
+  display: block;
+  width: 100%;
+  background: var(--btn);
+  color: var(--btn-fg);
+  border: 2px solid var(--card-border);
+  border-radius: 12px;
+  padding: 13px 20px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.18s;
+  margin-bottom: 10px;
+}
+.btn:hover { background: var(--btn-hover); transform: translateY(-2px); box-shadow: var(--shadow); }
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  font-size: 1.15rem;
+  padding: 15px 28px;
+}
+.btn-primary:hover { filter: brightness(1.1); transform: translateY(-2px); }
+.btn-big {
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.8rem;
+  padding: 20px 50px;
+  border-radius: 20px;
+  width: auto;
+}
+.btn-small {
+  font-size: 0.85rem;
+  padding: 8px 16px;
+  width: auto;
+  display: inline-block;
+  margin: 4px;
+}
+.btn-icon {
+  font-size: 1.5rem;
+  padding: 16px 24px;
+  width: auto;
+  display: inline-block;
+  margin: 6px;
+  border-radius: 14px;
+  min-width: 70px;
+}
+.btn-colour {
+  font-size: 1.1rem;
+  padding: 18px 10px;
+  border-radius: 14px;
+  flex: 1;
+  margin: 6px;
+  font-weight: 800;
+  border: 3px solid transparent;
+}
+.btn-colour:hover { transform: scale(1.07); }
+
+/* ── Input ─────────────────────────────────────────────────── */
+input[type="text"], input[type="number"] {
+  width: 100%;
+  background: var(--input-bg);
+  color: var(--input-fg);
+  border: 2px solid var(--card-border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.2s;
+  margin-bottom: 16px;
+  text-align: center;
+}
+input:focus { border-color: var(--accent); }
+
+/* ── Welcome Screen ────────────────────────────────────────── */
+#welcome { text-align: center; gap: 16px; }
+#welcome h1 { font-size: 3rem; margin-bottom: 8px; }
+.star-row { font-size: 2rem; margin-bottom: 16px; }
+
+/* ── Grade Grid ────────────────────────────────────────────── */
+.grade-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+.grade-btn {
+  background: var(--btn);
+  color: var(--btn-fg);
+  border: 2px solid var(--card-border);
+  border-radius: 14px;
+  padding: 14px 8px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s;
+  text-align: center;
+}
+.grade-btn:hover { background: var(--btn-hover); border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); }
+
+/* ── Subject Grid ──────────────────────────────────────────── */
+.subject-grid { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+
+/* ── Quiz Screen ───────────────────────────────────────────── */
+.progress-bar-wrap { background: var(--card-border); border-radius: 99px; height: 8px; margin-bottom: 20px; }
+.progress-bar-fill { background: var(--accent); border-radius: 99px; height: 8px; transition: width 0.4s; }
+.score-row { display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 700; opacity: 0.7; margin-bottom: 12px; }
+.question-text { font-size: 1.25rem; font-weight: 700; line-height: 1.5; margin-bottom: 20px; white-space: pre-wrap; }
+.passage-box { background: var(--btn); border: 2px solid var(--card-border); border-radius: 12px; padding: 16px; font-size: 0.95rem; line-height: 1.7; margin-bottom: 16px; font-style: italic; }
+
+/* ── KG Letter ─────────────────────────────────────────────── */
+.big-letter { font-family: 'Fredoka One', cursive; font-size: 7rem; color: var(--accent); text-align: center; line-height: 1; margin: 8px 0; }
+.letter-picture { font-size: 1.4rem; text-align: center; margin-bottom: 16px; }
+.letter-choices { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 8px 0 16px; }
+
+/* ── Result Screen ─────────────────────────────────────────── */
+.result-emoji { font-size: 4rem; margin-bottom: 8px; }
+.score-big { font-size: 2.5rem; font-weight: 900; color: var(--accent); margin: 8px 0; }
+.result-msg { font-size: 1.1rem; margin-bottom: 24px; }
+
+/* ── Toast ─────────────────────────────────────────────────── */
+#toast {
+  position: fixed;
+  bottom: 30px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--card);
+  color: var(--fg);
+  border: 2px solid var(--card-border);
+  border-radius: 14px;
+  padding: 14px 28px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  box-shadow: var(--shadow);
+  transition: transform 0.3s, opacity 0.3s;
+  opacity: 0;
+  z-index: 9999;
+  text-align: center;
+  max-width: 340px;
+}
+#toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+#toast.correct { border-color: #27ae60; color: #27ae60; }
+#toast.wrong   { border-color: #e74c3c; color: #e74c3c; }
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .card { padding: 24px 16px; }
+  h1 { font-size: 2rem; }
+  .big-letter { font-size: 5rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Top Controls -->
+<div id="top-controls">
+  <button class="ctrl-btn" id="theme-btn" onclick="toggleTheme()">🌙 Dark</button>
+  <button class="ctrl-btn" id="music-btn" onclick="toggleMusic()">🎵 Music: ON</button>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SCREEN: Welcome
+══════════════════════════════════════════════════════════ -->
+<div class="screen active" id="welcome">
+  <div class="star-row">⭐ 🌟 ⭐</div>
+  <h1>Fun Study Game</h1>
+  <p class="subtitle">Learning is an adventure — let's begin!</p>
+  <button class="btn btn-primary btn-big" onclick="show('grade-select')">▶ Play</button>
+  <button class="btn btn-small" style="margin-top:12px" onclick="if(confirm('Quit?'))window.close()">Quit</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SCREEN: Grade Selection
+══════════════════════════════════════════════════════════ -->
+<div class="screen" id="grade-select">
+  <div class="card">
+    <h2>What grade are you in?</h2>
+    <p class="subtitle">Click your grade below</p>
+    <div class="grade-grid" id="grade-grid"></div>
+    <br>
+    <button class="btn btn-small" onclick="show('welcome')">← Back</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SCREEN: Subject Menu
+══════════════════════════════════════════════════════════ -->
+<div class="screen" id="subject-menu">
+  <div class="card">
+    <h2 id="subject-grade-title"></h2>
+    <p class="subtitle">Choose a subject</p>
+    <div class="subject-grid" id="subject-grid"></div>
+    <br>
+    <button class="btn btn-small" onclick="show('grade-select')">← Back to Grades</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SCREEN: Question Count
+══════════════════════════════════════════════════════════ -->
+<div class="screen" id="q-count">
+  <div class="card" style="text-align:center">
+    <h2 id="q-count-title"></h2>
+    <p class="subtitle" id="q-count-sub"></p>
+    <input type="number" id="q-count-input" min="1" max="20" placeholder="e.g. 10">
+    <button class="btn btn-primary" onclick="startQuiz()">Start Quiz ▶</button>
+    <br>
+    <button class="btn btn-small" onclick="show('subject-menu')">← Back</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SCREEN: Quiz
+══════════════════════════════════════════════════════════ -->
+<div class="screen" id="quiz">
+  <div class="card">
+    <div class="score-row">
+      <span id="quiz-score">Score: 0</span>
+      <span id="quiz-progress">Q 1/10</span>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill"></div></div>
+    <div id="quiz-passage" class="passage-box" style="display:none"></div>
+    <div class="question-text" id="quiz-question"></div>
+    <div id="spelling-btn-wrap" style="display:none;margin-bottom:12px">
+      <button class="btn btn-small" onclick="speakWord()">🔊 Hear Word</button>
+    </div>
+    <input type="text" id="quiz-answer" placeholder="Type your answer here…" onkeydown="if(event.key==='Enter')submitAnswer()">
+    <button class="btn btn-primary" onclick="submitAnswer()">Submit Answer ✅</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SCREEN: Result
+══════════════════════════════════════════════════════════ -->
+<div class="screen" id="result">
+  <div class="card" style="text-align:center">
+    <div class="result-emoji" id="result-emoji">🏆</div>
+    <h2>Quiz Over!</h2>
+    <div class="score-big" id="result-score"></div>
+    <p class="result-msg" id="result-msg"></p>
+    <button class="btn btn-primary" id="result-again" onclick="">Play Same Subject Again</button>
+    <button class="btn" onclick="show('subject-menu')">Choose Another Subject</button>
+    <button class="btn" onclick="show('grade-select')">Change Grade</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SCREEN: KG Menu
+══════════════════════════════════════════════════════════ -->
+<div class="screen" id="kg-menu">
+  <div class="card">
+    <h2>🌈 Kindergarten Activities 🌈</h2>
+    <p class="subtitle">Choose an activity</p>
+    <button class="btn" onclick="startKGActivity('abc')">🔤 ABC Tracing</button>
+    <button class="btn" onclick="startKGActivity('colours')">🎨 Colours</button>
+    <button class="btn" onclick="startKGActivity('numbers')">🔢 Numbers</button>
+    <br>
+    <button class="btn btn-small" onclick="show('grade-select')">← Back to Grades</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SCREEN: KG ABC
+══════════════════════════════════════════════════════════ -->
+<div class="screen" id="kg-abc">
+  <div class="card" style="text-align:center">
+    <p id="kg-abc-progress" style="opacity:0.6;margin-bottom:4px;font-weight:700"></p>
+    <div class="big-letter" id="kg-abc-letter"></div>
+    <div class="letter-picture" id="kg-abc-picture"></div>
+    <button class="btn btn-small" style="margin-bottom:16px" onclick="speakLetter()">🔊 Hear the Letter</button>
+    <p style="font-weight:700;margin-bottom:12px">Which letter is this? Tap the correct one!</p>
+    <div class="letter-choices" id="kg-abc-choices"></div>
+    <button class="btn btn-small" onclick="show('kg-menu')">← Back to Activities</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SCREEN: KG Colours
+══════════════════════════════════════════════════════════ -->
+<div class="screen" id="kg-colours">
+  <div class="card" style="text-align:center">
+    <p id="kg-colour-progress" style="opacity:0.6;margin-bottom:8px;font-weight:700"></p>
+    <h2>🎨 Colour Time! 🎨</h2>
+    <p id="kg-colour-instruction" style="font-size:1.3rem;font-weight:800;margin:16px 0"></p>
+    <div id="kg-colour-choices" style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:8px 0 20px"></div>
+    <button class="btn btn-small" onclick="show('kg-menu')">← Back to Activities</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SCREEN: KG Numbers
+══════════════════════════════════════════════════════════ -->
+<div class="screen" id="kg-numbers">
+  <div class="card" style="text-align:center">
+    <p id="kg-num-progress" style="opacity:0.6;margin-bottom:8px;font-weight:700"></p>
+    <h2>🔢 Numbers! 🔢</h2>
+    <p id="kg-num-question" style="font-size:1.25rem;font-weight:700;white-space:pre-wrap;margin:16px 0"></p>
+    <p id="kg-num-hint" style="opacity:0.6;font-size:0.9rem;margin-bottom:16px"></p>
+    <input type="text" id="kg-num-answer" placeholder="Your answer…" onkeydown="if(event.key==='Enter')checkKGNumber()">
+    <button class="btn btn-primary" onclick="checkKGNumber()">Submit ✅</button>
+    <button class="btn btn-small" onclick="show('kg-menu')">← Back to Activities</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SCREEN: KG Complete
+══════════════════════════════════════════════════════════ -->
+<div class="screen" id="kg-complete">
+  <div class="card" style="text-align:center">
+    <div style="font-size:4rem;margin-bottom:8px">🎉</div>
+    <h2>Amazing!</h2>
+    <p id="kg-complete-msg" style="font-size:1.1rem;margin:16px 0"></p>
+    <button class="btn btn-primary" onclick="startKGActivity(currentKGActivity)">Play Again</button>
+    <button class="btn" onclick="show('kg-menu')">Try Another Activity</button>
+    <button class="btn btn-small" onclick="show('grade-select')">← Choose Another Grade</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  QUESTION DATA
+// ═══════════════════════════════════════════════════════════
+const LETTER_PICTURES = {
+  A:"🍎 Apple",B:"🎈 Ball",C:"🐱 Cat",D:"🐶 Dog",E:"🥚 Egg",F:"🐸 Frog",
+  G:"🍇 Grapes",H:"🏠 House",I:"🍦 Ice Cream",J:"🧃 Juice",K:"🪁 Kite",
+  L:"🦁 Lion",M:"🌙 Moon",N:"📰 Newspaper",O:"🍊 Orange",P:"🐧 Penguin",
+  Q:"👸 Queen",R:"🌈 Rainbow",S:"⭐ Star",T:"🐢 Turtle",U:"☂️ Umbrella",
+  V:"🎻 Violin",W:"🌊 Wave",X:"🎶 Xylophone",Y:"🧶 Yarn",Z:"🦓 Zebra"
+};
+const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+const COLOUR_ACTIVITIES = [
+  {instruction:"Click the RED button!",correct:"Red",options:["Red","Blue","Green","Yellow"]},
+  {instruction:"Click the BLUE button!",correct:"Blue",options:["Orange","Blue","Purple","Pink"]},
+  {instruction:"Click the GREEN button!",correct:"Green",options:["Green","Brown","White","Black"]},
+  {instruction:"Click the YELLOW button!",correct:"Yellow",options:["Red","Yellow","Blue","Green"]},
+  {instruction:"Click the ORANGE button!",correct:"Orange",options:["Pink","Purple","Orange","Red"]},
+  {instruction:"Click the PURPLE button!",correct:"Purple",options:["Purple","Blue","Green","Yellow"]},
+  {instruction:"Click the PINK button!",correct:"Pink",options:["Orange","Pink","Brown","Red"]},
+  {instruction:"Click the BLACK button!",correct:"Black",options:["White","Black","Grey","Blue"]},
+];
+const COLOUR_MAP = {
+  Red:"#e74c3c",Blue:"#3498db",Green:"#27ae60",Yellow:"#f1c40f",
+  Orange:"#e67e22",Purple:"#9b59b6",Pink:"#ff69b4",Black:"#2c3e50",
+  White:"#ecf0f1",Brown:"#8B4513",Grey:"#95a5a6"
+};
+
+const NUMBER_ACTIVITIES = [
+  {question:"How many apples are there?\n🍎 🍎 🍎",answer:"3",hint:"Count the apples!",item:"apples"},
+  {question:"How many stars are there?\n⭐ ⭐",answer:"2",hint:"Count the stars!",item:"stars"},
+  {question:"How many dogs are there?\n🐶 🐶 🐶 🐶",answer:"4",hint:"Count the dogs!",item:"dogs"},
+  {question:"How many flowers are there?\n🌸 🌸 🌸 🌸 🌸",answer:"5",hint:"Count the flowers!",item:"flowers"},
+  {question:"What number comes after 3?",answer:"4",hint:"3 ... then?",item:null},
+  {question:"What number comes before 7?",answer:"6",hint:"? ... 7",item:null},
+  {question:"How many balloons are there?\n🎈",answer:"1",hint:"Count the balloons!",item:"balloon"},
+  {question:"What is 1 + 1?",answer:"2",hint:"One finger + one finger = ?",item:null},
+  {question:"What is 2 + 2?",answer:"4",hint:"Two and two more!",item:null},
+  {question:"What is 3 + 1?",answer:"4",hint:"Three things and one more!",item:null},
+];
+
+const BANKS = {
+  g13_english:{"What is the opposite of 'hot'?":"cold","Which word rhymes with 'cat'?  bat / dog / fish":"bat","What is the plural of 'apple'?":"apples","Fill in the blank: The dog ___ loudly. (bark/barks)":"barks","What is the opposite of 'big'?":"small","Which letter is missing? A B _ D E":"C","What is the plural of 'child'?":"children","Which word rhymes with 'sun'?  run / cat / bird":"run","What comes at the end of a sentence?":"full stop","How do you spell the number 3?":"three","What is the opposite of 'day'?":"night","What type of word is 'quickly'?":"adverb"},
+  g13_maths:{"What is 5 + 3?":"8","What is 10 - 4?":"6","What is 2 × 3?":"6","What is 8 + 7?":"15","What is 15 - 9?":"6","How many sides does a triangle have?":"3","What is 4 × 2?":"8","What is 12 - 5?":"7","How many sides does a square have?":"4","What is 6 + 9?":"15","What is 20 - 8?":"12","What is 3 × 3?":"9"},
+  g13_science:{"Name one thing plants need to grow.":"water","What do caterpillars turn into?":"butterfly","Is a rock living or non-living?":"non-living","What do we call baby frogs?":"tadpoles","Name a source of light.":"sun","What sense do we use our ears for?":"hearing","What do animals need to survive?":"food","What is the weather called when water falls from the sky?":"rain","What do trees give us to breathe?":"oxygen","Name something that is a solid.":"rock"},
+  g13_social:{"What country do you live in?":"botswana","What do we call the leader of a family?":"parent","Name one rule you follow at school.":"be quiet","What is a community?":"group of people","What do we say to be polite when we receive something?":"thank you","Name a place in your community where sick people go.":"hospital","What do traffic lights mean when they are red?":"stop","What is the job of a police officer?":"protect people","Name one way we can help the environment.":"recycle","What do we call people who came before us?":"ancestors"},
+  g46_english:{"What is a noun?":"a person place or thing","What is the past tense of 'run'?":"ran","What is a synonym for 'happy'?":"joyful","What punctuation ends a question?":"question mark","What is an antonym for 'ancient'?":"modern","What is a verb?":"an action word","What is the plural of 'mouse'?":"mice","What does 'autobiography' mean?":"a book written about yourself","What is a simile?":"comparing using like or as","What is direct speech shown with?":"quotation marks","What is an adjective?":"a describing word","What is the past tense of 'write'?":"wrote"},
+  g46_maths:{"What is 24 × 6?":"144","What is 144 ÷ 12?":"12","What is 15% of 200?":"30","What is the area of a rectangle 8cm × 5cm?":"40","What is 3/4 + 1/4?":"1","What is the perimeter of a square with side 7cm?":"28","What is 2.5 + 3.7?":"6.2","Round 4.67 to 1 decimal place.":"4.7","What is 5²?":"25","What is 1/2 of 80?":"40","What is 7 × 8?":"56","What is 100 ÷ 4?":"25"},
+  g46_science:{"What are the three states of matter?":"solid liquid gas","What is the process of water turning to steam called?":"evaporation","What planet is closest to the Sun?":"mercury","What is the unit for measuring temperature?":"degrees celsius","What type of energy does the Sun give us?":"solar energy","What is a food web?":"interconnected food chains","What is condensation?":"gas turning to liquid","Name the gas plants absorb from the air.":"carbon dioxide","What is a habitat?":"where an animal lives","What is the function of roots in a plant?":"absorb water and nutrients"},
+  g46_social:{"What continent is Botswana in?":"africa","What is the capital city of South Africa?":"pretoria","What is a democracy?":"government chosen by the people","What is deforestation?":"cutting down forests","What is trade?":"buying and selling goods","Name an ancient civilisation.":"egypt","What is migration?":"moving from one place to another","What is a natural resource?":"something found in nature","What is climate?":"average weather over a long time","Name the longest river in Africa.":"nile"},
+  g5_agriculture:{"What do plants need to grow?":"water sunlight and soil","What is a crop?":"a plant grown by farmers for food","Name one tool a farmer uses.":"hoe","What do we call the top layer of earth where plants grow?":"soil","What is irrigation?":"watering crops using pipes or channels","What is a seed?":"the part of a plant that grows into a new plant","Name a food crop grown in Botswana.":"sorghum","What do we call animals kept on a farm?":"livestock","What is compost?":"rotted plant material used to feed the soil","What is weeding?":"removing unwanted plants from the garden","What is the difference between a fruit and a vegetable?":"a fruit has seeds inside a vegetable does not","Name one type of livestock.":"cattle","What season is best for planting crops?":"rainy season","What is a greenhouse?":"a glass building used to grow plants","What does a farmer use to keep away birds from crops?":"scarecrow","What is harvesting?":"collecting crops when they are ready"},
+  g79_english:{"What is a metaphor?":"saying something IS something else","What is a clause?":"a group of words with a subject and verb","What is personification?":"giving human qualities to non-human things","What is the passive voice?":"when the subject receives the action","What is an oxymoron?":"two contradictory words together","What is a subordinate clause?":"a clause that cannot stand alone","What is imagery?":"language that creates a picture in the mind","What is alliteration?":"repetition of the same starting sound","What is foreshadowing?":"hints about what will happen later","What is hyperbole?":"extreme exaggeration for effect","What is the purpose of a thesis statement?":"to state the main argument of an essay"},
+  g79_maths:{"Solve: 3x + 5 = 20":"5","What is 30% of 450?":"135","Simplify: 4x + 3x - 2x":"5x","What is the square root of 144?":"12","What is 2³?":"8","What is the HCF of 12 and 18?":"6","What is the LCM of 4 and 6?":"12","Convert 0.75 to a fraction.":"3/4","What is the gradient of a horizontal line?":"0","Expand: 3(x + 4)":"3x + 12","What is the volume of a cube with side 5cm?":"125"},
+  g79_science:{"What is the chemical formula for carbon dioxide?":"CO2","What is Newton's first law of motion?":"an object stays at rest unless acted upon","What are the products of photosynthesis?":"glucose and oxygen","What is an element?":"a pure substance made of one type of atom","What is the pH of a neutral substance?":"7","What type of wave is sound?":"longitudinal","What is the function of the mitochondria?":"produces energy for the cell","What is a chemical reaction?":"when substances combine to form new substances","What carries oxygen in red blood cells?":"haemoglobin","What is an ion?":"an atom that has gained or lost electrons"},
+  g79_history:{"What year did World War I begin?":"1914","What was the Cold War?":"rivalry between usa and ussr","Who was Nelson Mandela?":"first black president of south africa","What was the Berlin Wall?":"wall dividing east and west berlin","What country did Christopher Columbus sail for?":"spain","What was the apartheid?":"racial segregation in south africa","What is colonialism?":"when one country takes control of another","What ancient wonder was in Egypt?":"great pyramid of giza","When did Botswana gain independence?":"1966"},
+  g79_ict:{"What does CPU stand for?":"central processing unit","What is the internet?":"global network of connected computers","What is RAM?":"random access memory","What is a spreadsheet used for?":"organising and calculating data","What does URL stand for?":"uniform resource locator","What is an operating system?":"software that manages a computer","What is a database?":"organised collection of data","What does HTML stand for?":"hypertext markup language","What is a virus in computing?":"malicious software that damages files","What is cyberbullying?":"bullying using technology","What is email?":"electronic mail sent over the internet","What is a byte?":"unit of digital information"},
+  g79_re:{"What are the Five Pillars of Islam?":"shahada salah zakat sawm hajj","What is the Golden Rule found in most religions?":"treat others as you want to be treated","What is reincarnation?":"being reborn after death","What is the Torah?":"holy scripture of judaism","What does karma mean in Hinduism?":"actions determine future fate","What is the Quran?":"holy book of islam","What is meditation used for in Buddhism?":"to achieve inner peace and enlightenment","What is a pilgrimage?":"journey to a holy place","What does ATR stand for?":"african traditional religion","What is baptism?":"christian ceremony welcoming someone into the church"},
+  g1012_english:{"What is the difference between denotation and connotation?":"denotation is literal meaning connotation is implied meaning","What is dramatic irony?":"audience knows something characters do not","What is a soliloquy?":"character speaks thoughts aloud alone on stage","What is an unreliable narrator?":"a narrator whose credibility is questionable","What is stream of consciousness?":"writing that reflects continuous flow of thoughts","What is the purpose of a foil character?":"to highlight qualities of another character by contrast","What is catharsis in literature?":"emotional release experienced by the audience","What is an iambic pentameter?":"ten syllable line with five unstressed stressed pairs","What is postcolonial literature?":"literature dealing with effects of colonisation"},
+  g1012_maths:{"Solve the quadratic: x² - 5x + 6 = 0":"x=2 and x=3","What is sin(90°)?":"1","What is the equation of a straight line?":"y = mx + c","Differentiate: y = 3x²":"6x","What is the sum of angles in a triangle?":"180","What is a geometric sequence?":"each term multiplied by a constant ratio","What is log₁₀(1000)?":"3","What is the quadratic formula?":"x equals negative b plus or minus root b squared minus 4ac all over 2a","What is the cosine rule?":"a squared equals b squared plus c squared minus 2bc cos A","What is a prime number?":"a number divisible only by 1 and itself","What is the derivative of a constant?":"0"},
+  g1012_biology:{"What is DNA?":"deoxyribonucleic acid","What is natural selection?":"survival of the fittest organisms","What is the function of the ribosomes?":"protein synthesis","What is osmosis?":"movement of water through a semi permeable membrane","What is the role of enzymes?":"biological catalysts that speed up reactions","What are the four bases in DNA?":"adenine thymine guanine cytosine","What is a chromosome?":"structure containing genetic information","What is active transport?":"movement of substances against a concentration gradient using energy","What is homeostasis?":"maintaining a stable internal environment","What is aerobic respiration?":"releasing energy using oxygen","What is the function of insulin?":"regulates blood glucose levels"},
+  g1012_chemistry:{"What is an ionic bond?":"bond formed by transfer of electrons","What is a covalent bond?":"bond formed by sharing electrons","What is oxidation?":"loss of electrons","What is a catalyst?":"substance that speeds up a reaction without being used up","What is the formula for sulfuric acid?":"H2SO4","What is an exothermic reaction?":"reaction that releases energy as heat","What is the atomic number of carbon?":"6","What is electrolysis?":"decomposition using electric current","What is a buffer solution?":"solution that resists changes in pH","What is Le Chatelier's principle?":"a system at equilibrium opposes changes made to it"},
+  g1012_physics:{"What is Ohm's Law?":"V equals IR","What is the unit of force?":"newton","What is kinetic energy?":"energy of a moving object","What is electromagnetic induction?":"generating a current by moving a conductor in a magnetic field","What is the formula for power?":"P equals IV or P equals V squared over R","What is nuclear fission?":"splitting of a heavy nucleus releasing energy","What is the difference between AC and DC?":"AC alternates direction DC flows one way","What is refraction?":"bending of light as it passes between mediums","What is the Doppler effect?":"change in wave frequency due to relative motion","What is centripetal force?":"force directed toward the centre of a circular path"},
+  g1012_history:{"What caused World War II?":"german aggression and failure of appeasement","What was the Holocaust?":"genocide of jewish people by the nazis","What is the United Nations?":"international organisation for peace and cooperation","What was the Cuban Missile Crisis?":"1962 standoff between usa and ussr over nuclear missiles in cuba","What was Pan-Africanism?":"movement for unity and solidarity of african peoples","Who was Patrice Lumumba?":"first prime minister of the democratic republic of congo","What was decolonisation?":"process of african and asian nations gaining independence","What was the Marshall Plan?":"us programme to rebuild western europe after world war 2"},
+  g1012_business:{"What is GDP?":"gross domestic product","What is inflation?":"general rise in prices over time","What is supply and demand?":"economic model of price determination","What is a balance sheet?":"financial statement showing assets and liabilities","What is marketing?":"promoting and selling products or services","What is entrepreneurship?":"starting and running your own business","What is opportunity cost?":"value of the next best alternative given up","What is a monopoly?":"single seller dominating a market","What is cash flow?":"movement of money in and out of a business","What is diversification?":"spreading investments to reduce risk","What is a budget?":"plan for how money will be spent"},
+  g1012_rs:{"What is liberation theology?":"christian movement linking faith to social justice","What is the difference between Sunni and Shia Islam?":"differ on succession after prophet muhammad","What is the concept of dharma in Hinduism?":"moral duty and righteous conduct","What is the Eightfold Path in Buddhism?":"the buddha's guide to ending suffering","What is ecumenism?":"movement for unity among christian churches","What is theodicy?":"attempt to explain why god allows evil and suffering","What is the sanctity of life?":"belief that all life is sacred and should be protected","What is religious pluralism?":"belief that multiple religions are valid paths to truth"},
+  g12_english:{"What is a dialectical argument?":"an argument that considers opposing viewpoints to reach a conclusion","What is intertextuality?":"when a text references or reflects another text","What is the difference between tragedy and comedy in literature?":"tragedy ends in suffering comedy ends happily","What is a polemic?":"a strong written or spoken attack on an opposing view","What is epistolary form?":"a story told through letters or diary entries","What is postmodernism in literature?":"a style that challenges traditional narrative and form","What is the difference between syntax and diction?":"syntax is sentence structure diction is word choice","What is a literary canon?":"the body of literature widely accepted as important","What is magical realism?":"a style blending realistic and fantastical elements"},
+  g12_maths:{"What is the integral of 2x?":"x squared plus C","What is Euler's number e approximately equal to?":"2.718","What does it mean for a function to be continuous?":"no breaks gaps or jumps in the graph","What is the binomial theorem used for?":"expanding expressions of the form (a+b) to the power n","What is a matrix?":"a rectangular array of numbers arranged in rows and columns","What is the determinant of a 2x2 matrix [[a,b],[c,d]]?":"ad minus bc","What is a limit in calculus?":"the value a function approaches as the input approaches a point","What is the chain rule in differentiation?":"derivative of f(g(x)) is f prime of g(x) times g prime of x","What is a geometric series sum formula?":"a divided by one minus r when r is less than 1","What is a normal distribution?":"a bell shaped probability distribution symmetric about the mean"},
+  g12_biology:{"What is the central dogma of molecular biology?":"DNA to RNA to protein","What is a transgenic organism?":"an organism with genes from another species inserted into it","What is the Hardy-Weinberg principle?":"allele frequencies in a population remain constant without evolution","What is apoptosis?":"programmed cell death","What is a monoclonal antibody?":"identical antibodies produced from a single clone of cells","What is the role of ATP synthase?":"produces ATP using the proton gradient in mitochondria","What is gene expression?":"the process by which information in a gene is used to make a protein","What is epistasis?":"when one gene masks the expression of another gene","What is a stem cell?":"an undifferentiated cell that can develop into many cell types"},
+  g12_chemistry:{"What is Hess's Law?":"the total enthalpy change is independent of the route taken","What is an electrode potential?":"the voltage of a half cell measured against a standard hydrogen electrode","What is a nucleophilic substitution reaction?":"a nucleophile replaces a leaving group in a molecule","What is the Brønsted-Lowry definition of an acid?":"a proton donor","What is entropy?":"a measure of disorder or randomness in a system","What is a chiral molecule?":"a molecule that cannot be superimposed on its mirror image","What is Gibbs free energy?":"the energy available to do useful work in a reaction","What is a pi bond?":"a bond formed by sideways overlap of p orbitals","What is rate of reaction?":"the change in concentration of reactants or products per unit time"},
+  g12_physics:{"What is the Heisenberg uncertainty principle?":"you cannot know both position and momentum of a particle exactly","What is a photon?":"a particle of light carrying energy equal to hf","What is nuclear fusion?":"combining of light nuclei to release large amounts of energy","What is the photoelectric effect?":"emission of electrons when light shines on a metal surface","What is simple harmonic motion?":"oscillation where acceleration is proportional to and opposite to displacement","What is a standing wave?":"a wave that appears stationary formed by two waves travelling in opposite directions","What is the de Broglie wavelength?":"the wavelength associated with a moving particle","What is gravitational potential energy formula?":"mass times gravitational field strength times height","What is the difference between analogue and digital signals?":"analogue varies continuously digital uses discrete values","What is capacitance?":"the ability of a component to store electric charge"},
+  g12_history:{"What was the Nuremberg Trials?":"trials of nazi war criminals after world war 2","What was the significance of the Bandung Conference 1955?":"first large gathering of asian and african nations promoting solidarity","What is neocolonialism?":"indirect control of developing nations through economic or political means","What was the significance of 1989 in world history?":"fall of the berlin wall and end of the cold war","What was the Rwandan Genocide?":"mass killing of the tutsi people by hutu extremists in 1994","What is globalisation?":"the process of countries becoming more interconnected economically and culturally","What was apartheid's impact on south african society?":"created deep racial inequality poverty and trauma","Who was Kwame Nkrumah?":"first president of ghana and leader of african independence movement"},
+  g12_business:{"What is Porter's Five Forces?":"a framework analysing competitive forces in an industry","What is a SWOT analysis?":"analysis of strengths weaknesses opportunities and threats","What is the difference between fixed and variable costs?":"fixed costs do not change with output variable costs do","What is break-even analysis?":"finding the point where total revenue equals total costs","What is corporate social responsibility?":"a business taking responsibility for its social and environmental impact","What is a merger?":"when two companies combine to form one company","What is monetary policy?":"government control of money supply and interest rates","What is a multinational corporation?":"a company that operates in multiple countries","What is economies of scale?":"cost advantages from increasing the scale of production","What is the difference between debt and equity financing?":"debt is borrowing money equity is selling ownership shares"},
+  g12_rs:{"What is existentialism and how does it relate to religion?":"a philosophy focusing on individual existence often questioning religious meaning","What is natural theology?":"knowledge of god derived from reason and nature rather than scripture","What is the ontological argument for god?":"god must exist because a perfect being must have the property of existence","What is agnosticism?":"the belief that the existence of god is unknown or unknowable","What is comparative religion?":"the study of similarities and differences between world religions","What is the cosmological argument?":"the universe must have a first cause which is god","What is the problem of evil in theology?":"if god is good and all-powerful why does evil exist","What is religious fundamentalism?":"strict literal interpretation of religious texts","What is secular ethics?":"a moral framework not based on religious principles"},
+  spelling:{words:["bicycle","science","beautiful","schedule","neighbor","special","delicious","receive","knowledge","island","though","various","exercise","government","environment","occasion","separate","believe","necessary","probably","cemetery","rhythm","privilege","conscience","accommodate","exaggerate","guarantee","lightning","mischievous","recommend"]},
+  comprehension:{stories:[
+    {passage:"Leo the lion loved to nap. He would find the shadiest tree and sleep for hours. One afternoon, a tiny mouse named Squeaky accidentally woke him up. Leo laughed and let the mouse go.",question:"What did Leo the lion love to do?",answer:"nap"},
+    {passage:"Maya got a new bicycle for her birthday. It was bright red with a shiny silver bell. She couldn't wait to ride it to the park. Her dad helped her put on her helmet, and she practiced riding.",question:"What color was Maya's new bicycle?",answer:"red"},
+    {passage:"Lily was walking home from school when she heard a 'meow' from a bush. She saw a small, scared kitten with fluffy orange fur. Lily gently picked it up, took it home, and gave it milk. She named him Sunny.",question:"What color was the kitten's fur?",answer:"orange"},
+    {passage:"Tom was building the tallest sandcastle on the beach. He used a red bucket and a blue shovel. Just as he was adding the final tower, a big wave washed it all away. Tom sighed, but then started to build a new one.",question:"What color was Tom's shovel?",answer:"blue"},
+    {passage:"A rocket ship named 'Starfire' was preparing for its first trip to the Moon. The astronaut, Captain Eva, checked all the buttons. With a loud roar and a cloud of smoke, the rocket lifted off the ground.",question:"What was the name of the rocket ship?",answer:"starfire"},
+    {passage:"A baker named Ben woke up at 4 AM every day. He mixed flour, water, and yeast to make dough. He shaped the dough into loaves and put them in a very hot oven. The smell of fresh bread filled the whole street.",question:"What did Ben use to make dough?",answer:"flour"},
+    {passage:"Deep in the ocean lived a curious octopus named Inky. Inky had eight long arms and could change color to blend in with the rocks. His favorite game was hide-and-seek with the fish.",question:"How many arms did Inky the octopus have?",answer:"eight"},
+    {passage:"At the science fair, a girl named Zara presented her project: a volcano made of clay. When she mixed vinegar and baking soda inside, red foam erupted from the top. The judges were very impressed.",question:"What did Zara's volcano project erupt with?",answer:"foam"},
+  ]},
+  botswana:{"Who is the current President of Botswana?":"Duma Boko","What is the national dish of Botswana?":"Seswaa","What is the most widely practiced religion in Botswana?":"Christianity","What is the name of the currency in Botswana?":"Pula","What is the capital city of Botswana?":"Gaborone","What famous desert covers much of southern Botswana?":"Kalahari Desert","What is the national bird of Botswana?":"Kori Bustard","What does the blue color on the Botswana flag represent?":"Water","Botswana has the largest population of which large, grey animal?":"Elephants","From which country did Botswana gain its independence in 1966?":"United Kingdom","What major river forms a border between Botswana and South Africa?":"Limpopo River","What is the main export for Botswana?":"Diamonds","What is the largest national park in Botswana?":"Chobe National Park","What is the national language of Botswana?":"Setswana","What is a traditional Botswana parliament called?":"Kgotla","What are the famous salt pans in Botswana called?":"Makgadikgadi Pans"},
+  religions:{"What is the holy book of Christianity?":"Bible","What is a place of worship for followers of Islam?":"Mosque","The Star of David is a symbol of which religion?":"Judaism","Diwali is a major holiday in which religion?":"Hinduism","What is a Jewish place of worship called?":"Synagogue","Who is considered the final prophet in Islam?":"Muhammad","Who is the central figure in Christianity?":"Jesus","What is the Hindu belief that actions in this life affect the next?":"Karma","The crescent moon and star is a symbol of which religion?":"Islam","What is the month of fasting for Muslims called?":"Ramadan","What Christian holy day celebrates the resurrection of Jesus?":"Easter","What is the pilgrimage to Mecca for Muslims called?":"Hajj","What is the primary symbol of Christianity?":"Cross"},
+};
+
+const GRADE_SUBJECTS = {
+  "Kindergarten": null,
+  "Grade 1":  [{label:"📖 English / Literacy",key:"g13_english"},{label:"🧮 Mathematics",key:"g13_maths"},{label:"🔬 Science",key:"g13_science"},{label:"🌍 Social Studies",key:"g13_social"},{label:"🐝 Spelling Bee",key:"spelling"},{label:"📚 Comprehension",key:"comprehension"}],
+  "Grade 2":  [{label:"📖 English / Literacy",key:"g13_english"},{label:"🧮 Mathematics",key:"g13_maths"},{label:"🔬 Science",key:"g13_science"},{label:"🌍 Social Studies",key:"g13_social"},{label:"🐝 Spelling Bee",key:"spelling"},{label:"📚 Comprehension",key:"comprehension"}],
+  "Grade 3":  [{label:"📖 English / Literacy",key:"g13_english"},{label:"🧮 Mathematics",key:"g13_maths"},{label:"🔬 Science",key:"g13_science"},{label:"🌍 Social Studies",key:"g13_social"},{label:"🐝 Spelling Bee",key:"spelling"},{label:"📚 Comprehension",key:"comprehension"}],
+  "Grade 4":  [{label:"📖 English",key:"g46_english"},{label:"🧮 Mathematics",key:"g46_maths"},{label:"🔬 Science",key:"g46_science"},{label:"🌍 Social Studies",key:"g46_social"},{label:"🐝 Spelling Bee",key:"spelling"},{label:"📚 Comprehension",key:"comprehension"},{label:"🇧🇼 Botswana Culture",key:"botswana"},{label:"🌐 World Religions",key:"religions"}],
+  "Grade 5":  [{label:"📖 English",key:"g46_english"},{label:"🧮 Mathematics",key:"g13_maths"},{label:"🔬 Science",key:"g13_science"},{label:"🌍 Social Studies",key:"g13_social"},{label:"🌱 Agriculture",key:"g5_agriculture"},{label:"🐝 Spelling Bee",key:"spelling"},{label:"📚 Comprehension",key:"comprehension"},{label:"🇧🇼 Botswana Culture",key:"botswana"}],
+  "Grade 6":  [{label:"📖 English",key:"g46_english"},{label:"🧮 Mathematics",key:"g46_maths"},{label:"🔬 Science",key:"g46_science"},{label:"🌍 Social Studies",key:"g46_social"},{label:"🐝 Spelling Bee",key:"spelling"},{label:"📚 Comprehension",key:"comprehension"},{label:"🇧🇼 Botswana Culture",key:"botswana"},{label:"🌐 World Religions",key:"religions"}],
+  "Grade 7":  [{label:"📖 English Language",key:"g79_english"},{label:"🧮 Mathematics",key:"g79_maths"},{label:"🔬 Integrated Science",key:"g79_science"},{label:"📜 History & Geography",key:"g79_history"},{label:"💻 ICT",key:"g79_ict"},{label:"🙏 Religious & Moral Ed",key:"g79_re"},{label:"🇧🇼 Botswana Culture",key:"botswana"}],
+  "Grade 8":  [{label:"📖 English Language",key:"g79_english"},{label:"🧮 Mathematics",key:"g79_maths"},{label:"🔬 Integrated Science",key:"g79_science"},{label:"📜 History & Geography",key:"g79_history"},{label:"💻 ICT",key:"g79_ict"},{label:"🙏 Religious & Moral Ed",key:"g79_re"},{label:"🇧🇼 Botswana Culture",key:"botswana"}],
+  "Grade 9":  [{label:"📖 English Language",key:"g79_english"},{label:"🧮 Mathematics",key:"g79_maths"},{label:"🔬 Integrated Science",key:"g79_science"},{label:"📜 History & Geography",key:"g79_history"},{label:"💻 ICT",key:"g79_ict"},{label:"🙏 Religious & Moral Ed",key:"g79_re"},{label:"🇧🇼 Botswana Culture",key:"botswana"}],
+  "Grade 10": [{label:"📖 English Language & Lit",key:"g1012_english"},{label:"🧮 Mathematics",key:"g1012_maths"},{label:"🧬 Biology",key:"g1012_biology"},{label:"⚗️ Chemistry",key:"g1012_chemistry"},{label:"⚡ Physics",key:"g1012_physics"},{label:"📜 History",key:"g1012_history"},{label:"💼 Business Studies",key:"g1012_business"},{label:"🙏 Religious Studies",key:"g1012_rs"}],
+  "Grade 11": [{label:"📖 English Language & Lit",key:"g1012_english"},{label:"🧮 Mathematics",key:"g1012_maths"},{label:"🧬 Biology",key:"g1012_biology"},{label:"⚗️ Chemistry",key:"g1012_chemistry"},{label:"⚡ Physics",key:"g1012_physics"},{label:"📜 History",key:"g1012_history"},{label:"💼 Business Studies",key:"g1012_business"},{label:"🙏 Religious Studies",key:"g1012_rs"}],
+  "Grade 12": [{label:"📖 English Language & Lit",key:"g12_english"},{label:"🧮 Mathematics",key:"g12_maths"},{label:"🧬 Biology",key:"g12_biology"},{label:"⚗️ Chemistry",key:"g12_chemistry"},{label:"⚡ Physics",key:"g12_physics"},{label:"📜 History",key:"g12_history"},{label:"💼 Business Studies",key:"g12_business"},{label:"🙏 Religious Studies",key:"g12_rs"}],
+};
+
+// ═══════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════
+let dark = false;
+let musicOn = true;
+let musicCtx = null, musicSource = null, musicGain = null;
+
+let selectedGrade = "";
+let selectedSubjectKey = "";
+let selectedSubjectLabel = "";
+let questions = [];   // [{q, a, passage?}]
+let qIndex = 0;
+let score = 0;
+let currentSpellingWord = "";
+
+let kgLetterIndex = 0;
+let kgColourIndex = 0;
+let kgNumIndex = 0;
+let currentKGActivity = "";
+
+// ═══════════════════════════════════════════════════════════
+//  SCREEN NAVIGATION
+// ═══════════════════════════════════════════════════════════
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  THEME
+// ═══════════════════════════════════════════════════════════
+function toggleTheme() {
+  dark = !dark;
+  document.body.classList.toggle('dark', dark);
+  document.getElementById('theme-btn').textContent = dark ? '☀️ Light' : '🌙 Dark';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  MUSIC (Web Audio API — lofi tone generator)
+// ═══════════════════════════════════════════════════════════
+function startMusic() {
+  if (musicCtx) return;
+  try {
+    musicCtx = new (window.AudioContext || window.webkitAudioContext)();
+    musicGain = musicCtx.createGain();
+    musicGain.gain.value = 0.12;
+    musicGain.connect(musicCtx.destination);
+    playMusicLoop();
+  } catch(e) { console.log('Music not supported:', e); }
+}
+
+// C-major pentatonic melody: C D E G A
+const MELODY = [
+  [261.63,0.45],[329.63,0.45],[392.00,0.45],[440.00,0.45],
+  [523.25,0.9],[392.00,0.45],[329.63,0.45],
+  [293.66,0.45],[329.63,0.45],[392.00,0.45],[329.63,0.45],
+  [261.63,0.9],[0,0.9],
+  [392.00,0.45],[440.00,0.45],[392.00,0.45],[329.63,0.45],
+  [293.66,0.45],[329.63,0.45],[261.63,0.9],
+];
+
+function playMusicLoop() {
+  if (!musicCtx || !musicOn) return;
+  let t = musicCtx.currentTime + 0.05;
+  let loopDur = 0;
+  MELODY.forEach(([freq, dur]) => {
+    if (freq > 0) {
+      const osc = musicCtx.createOscillator();
+      const g = musicCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      osc.connect(g);
+      g.connect(musicGain);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.7, t + 0.04);
+      g.gain.setValueAtTime(0.5, t + dur - 0.08);
+      g.gain.linearRampToValueAtTime(0, t + dur);
+      osc.start(t);
+      osc.stop(t + dur);
+    }
+    t += dur;
+    loopDur += dur;
+  });
+  setTimeout(playMusicLoop, (loopDur - 0.2) * 1000);
+}
+
+function toggleMusic() {
+  musicOn = !musicOn;
+  const btn = document.getElementById('music-btn');
+  if (musicOn) {
+    btn.textContent = '🎵 Music: ON';
+    btn.classList.add('music-on');
+    if (!musicCtx) startMusic();
+    else if (musicCtx.state === 'suspended') musicCtx.resume();
+    else playMusicLoop();
+  } else {
+    btn.textContent = '🎵 Music: OFF';
+    btn.classList.remove('music-on');
+    if (musicCtx) musicCtx.suspend();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  TTS (Web Speech API — built into every browser, no install)
+// ═══════════════════════════════════════════════════════════
+function speak(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.85;
+  u.pitch = 1.05;
+  window.speechSynthesis.speak(u);
+}
+
+function speakWord()   { speak(currentSpellingWord); }
+function speakLetter() { speak(ALPHABET[kgLetterIndex]); }
+
+// ═══════════════════════════════════════════════════════════
+//  GRADE SELECTION SETUP
+// ═══════════════════════════════════════════════════════════
+function buildGradeGrid() {
+  const grid = document.getElementById('grade-grid');
+  grid.innerHTML = '';
+  Object.keys(GRADE_SUBJECTS).forEach(grade => {
+    const btn = document.createElement('button');
+    btn.className = 'grade-btn';
+    btn.textContent = grade;
+    btn.onclick = () => selectGrade(grade);
+    grid.appendChild(btn);
+  });
+}
+
+function selectGrade(grade) {
+  selectedGrade = grade;
+  if (grade === 'Kindergarten') { show('kg-menu'); return; }
+  buildSubjectMenu(grade);
+  show('subject-menu');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SUBJECT MENU
+// ═══════════════════════════════════════════════════════════
+function buildSubjectMenu(grade) {
+  document.getElementById('subject-grade-title').textContent = '📚 ' + grade;
+  const grid = document.getElementById('subject-grid');
+  grid.innerHTML = '';
+  GRADE_SUBJECTS[grade].forEach(({label, key}) => {
+    const btn = document.createElement('button');
+    btn.className = 'btn';
+    btn.textContent = label;
+    btn.onclick = () => openSubject(key, label);
+    grid.appendChild(btn);
+  });
+}
+
+function openSubject(key, label) {
+  selectedSubjectKey = key;
+  selectedSubjectLabel = label;
+  const bank = BANKS[key];
+  let maxQ = 20;
+  if (key === 'spelling')       maxQ = bank.words.length;
+  else if (key === 'comprehension') maxQ = bank.stories.length;
+  else maxQ = Math.min(Object.keys(bank).length, 20);
+  document.getElementById('q-count-title').textContent = label;
+  document.getElementById('q-count-sub').textContent = `Enter a number from 1 to ${maxQ}`;
+  document.getElementById('q-count-input').max = maxQ;
+  document.getElementById('q-count-input').value = '';
+  document.getElementById('q-count-input').dataset.max = maxQ;
+  show('q-count');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  QUIZ ENGINE
+// ═══════════════════════════════════════════════════════════
+function startQuiz() {
+  const input = document.getElementById('q-count-input');
+  const n = parseInt(input.value);
+  const max = parseInt(input.dataset.max);
+  if (!n || n < 1 || n > max) { showToast(`Enter a number between 1 and ${max}`, 'wrong'); return; }
+  questions = buildQuestions(selectedSubjectKey, n);
+  qIndex = 0; score = 0;
+  displayQuestion();
+  show('quiz');
+}
+
+function buildQuestions(key, n) {
+  const bank = BANKS[key];
+  if (key === 'spelling') {
+    const words = shuffle([...bank.words]).slice(0, n);
+    return words.map(w => ({q:'Listen carefully and spell the word.', a:w, spelling:true, word:w}));
+  }
+  if (key === 'comprehension') {
+    const stories = shuffle([...bank.stories]).slice(0, n);
+    return stories.map(s => ({q:s.question, a:s.answer, passage:s.passage}));
+  }
+  const entries = shuffle(Object.entries(bank)).slice(0, n);
+  return entries.map(([q,a]) => ({q, a}));
+}
+
+function displayQuestion() {
+  if (qIndex >= questions.length) { showResult(); return; }
+  const item = questions[qIndex];
+  const pct = (qIndex / questions.length) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('quiz-score').textContent = `Score: ${score}`;
+  document.getElementById('quiz-progress').textContent = `Q ${qIndex+1}/${questions.length}`;
+
+  // passage
+  const passageEl = document.getElementById('quiz-passage');
+  if (item.passage) { passageEl.textContent = item.passage; passageEl.style.display = 'block'; }
+  else passageEl.style.display = 'none';
+
+  document.getElementById('quiz-question').textContent = item.q;
+
+  // spelling TTS button
+  const spellWrap = document.getElementById('spelling-btn-wrap');
+  if (item.spelling) { currentSpellingWord = item.word; spellWrap.style.display = 'block'; }
+  else spellWrap.style.display = 'none';
+
+  document.getElementById('quiz-answer').value = '';
+  document.getElementById('quiz-answer').focus();
+}
+
+function submitAnswer() {
+  const userRaw = document.getElementById('quiz-answer').value.trim();
+  if (!userRaw) return;
+  const correct = questions[qIndex].a;
+  const norm = s => s.toLowerCase().replace(/[.,!?]/g,'').trim();
+  if (norm(userRaw) === norm(correct)) {
+    score++;
+    showToast('✅ Correct! Well done!', 'correct');
+  } else {
+    showToast(`❌ The answer was: ${correct}`, 'wrong');
+  }
+  qIndex++;
+  setTimeout(displayQuestion, 1400);
+}
+
+function showResult() {
+  const total = questions.length;
+  const pct = Math.round((score / total) * 100);
+  let emoji, msg;
+  if (pct === 100) { emoji='🏆'; msg='Perfect score! You are a genius!'; }
+  else if (pct >= 70) { emoji='🎉'; msg='Great work! Keep it up!'; }
+  else if (pct >= 50) { emoji='👍'; msg='Good effort! A little more practice!'; }
+  else { emoji='💪'; msg='Keep trying — you will get there!'; }
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-score').textContent = `${score} / ${total}  (${pct}%)`;
+  document.getElementById('result-msg').textContent = msg;
+  document.getElementById('result-again').onclick = () => openSubject(selectedSubjectKey, selectedSubjectLabel);
+  show('result');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  KINDERGARTEN — ABC
+// ═══════════════════════════════════════════════════════════
+function startKGActivity(type) {
+  currentKGActivity = type;
+  if (type === 'abc')     { kgLetterIndex = 0; showKGABC(); show('kg-abc'); }
+  if (type === 'colours') { kgColourIndex = 0; showKGColour(); show('kg-colours'); }
+  if (type === 'numbers') { kgNumIndex = 0; showKGNumber(); show('kg-numbers'); }
+}
+
+function showKGABC() {
+  if (kgLetterIndex >= ALPHABET.length) { showKGComplete('ABC', ALPHABET.length); return; }
+  const letter = ALPHABET[kgLetterIndex];
+  document.getElementById('kg-abc-progress').textContent = `Letter ${kgLetterIndex+1} of ${ALPHABET.length}`;
+  document.getElementById('kg-abc-letter').textContent = letter;
+  document.getElementById('kg-abc-picture').textContent = LETTER_PICTURES[letter];
+
+  const pool = ALPHABET.filter(l => l !== letter);
+  const choices = shuffle([letter, ...shuffle(pool).slice(0,3)]);
+  const wrap = document.getElementById('kg-abc-choices');
+  wrap.innerHTML = '';
+  choices.forEach(ch => {
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-icon';
+    btn.textContent = ch;
+    btn.onclick = () => checkKGABC(ch, letter);
+    wrap.appendChild(btn);
+  });
+}
+
+function checkKGABC(chosen, correct) {
+  if (chosen === correct) {
+    showToast(`🎉 That's right! ${correct} is for ${LETTER_PICTURES[correct]}!`, 'correct');
+    kgLetterIndex++;
+    setTimeout(showKGABC, 1500);
+  } else {
+    showToast(`Oops! That was ${chosen}. Look for the letter ${correct}!`, 'wrong');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  KINDERGARTEN — COLOURS
+// ═══════════════════════════════════════════════════════════
+function showKGColour() {
+  if (kgColourIndex >= COLOUR_ACTIVITIES.length) { showKGComplete('Colours', COLOUR_ACTIVITIES.length); return; }
+  const act = COLOUR_ACTIVITIES[kgColourIndex];
+  document.getElementById('kg-colour-progress').textContent = `Activity ${kgColourIndex+1} of ${COLOUR_ACTIVITIES.length}`;
+  document.getElementById('kg-colour-instruction').textContent = act.instruction;
+  const wrap = document.getElementById('kg-colour-choices');
+  wrap.innerHTML = '';
+  shuffle([...act.options]).forEach(col => {
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-colour';
+    btn.textContent = col;
+    btn.style.background = COLOUR_MAP[col] || '#ccc';
+    btn.style.color = ['Black','Purple','Blue','Red','Brown'].includes(col) ? '#fff' : '#222';
+    btn.onclick = () => checkKGColour(col, act.correct);
+    wrap.appendChild(btn);
+  });
+}
+
+function checkKGColour(chosen, correct) {
+  if (chosen === correct) {
+    showToast(`🎉 Correct! That is ${correct}! Great job!`, 'correct');
+    kgColourIndex++;
+    setTimeout(showKGColour, 1500);
+  } else {
+    showToast(`That is ${chosen}. Can you find ${correct}?`, 'wrong');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  KINDERGARTEN — NUMBERS
+// ═══════════════════════════════════════════════════════════
+function showKGNumber() {
+  if (kgNumIndex >= NUMBER_ACTIVITIES.length) { showKGComplete('Numbers', NUMBER_ACTIVITIES.length); return; }
+  const act = NUMBER_ACTIVITIES[kgNumIndex];
+  document.getElementById('kg-num-progress').textContent = `Question ${kgNumIndex+1} of ${NUMBER_ACTIVITIES.length}`;
+  document.getElementById('kg-num-question').textContent = act.question;
+  document.getElementById('kg-num-hint').textContent = `Hint: ${act.hint}`;
+  document.getElementById('kg-num-answer').value = '';
+  document.getElementById('kg-num-answer').focus();
+}
+
+function checkKGNumber() {
+  const act = NUMBER_ACTIVITIES[kgNumIndex];
+  const user = document.getElementById('kg-num-answer').value.trim();
+  if (!user) return;
+  if (user.toLowerCase() === act.answer.toLowerCase()) {
+    let msg;
+    if (act.item) {
+      const noun = act.answer === '1' ? act.item.replace(/s$/,'') : (act.item.endsWith('s') ? act.item : act.item+'s');
+      msg = `There are ${act.answer} ${noun}! Good job! 🌟`;
+    } else msg = 'Amazing! You got it right! 🌟';
+    showToast('🎉 ' + msg, 'correct');
+  } else {
+    let msg;
+    if (act.item) {
+      const noun = act.answer === '1' ? act.item.replace(/s$/,'') : (act.item.endsWith('s') ? act.item : act.item+'s');
+      msg = `Not quite! There are ${act.answer} ${noun}. Keep going! 💪`;
+    } else msg = `Not quite! The answer was ${act.answer}. Keep going! 💪`;
+    showToast(msg, 'wrong');
+  }
+  kgNumIndex++;
+  setTimeout(showKGNumber, 1600);
+}
+
+function showKGComplete(name, total) {
+  document.getElementById('kg-complete-msg').textContent = `You finished all ${total} ${name} activities!\nGreat work, superstar! ⭐`;
+  show('kg-complete');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = ''; }, 2200);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════════════
+function shuffle(arr) {
+  for (let i = arr.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════
+buildGradeGrid();
+// Start music on first user interaction (browser requires it)
+document.body.addEventListener('click', () => {
+  if (musicOn && !musicCtx) startMusic();
+}, { once: true });
+document.getElementById('music-btn').classList.add('music-on');
+</script>
+</body>
+</html>
