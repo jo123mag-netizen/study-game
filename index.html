@@ -702,21 +702,38 @@ function speak(text) {
   }, 150);
 }
 
-// Words the TTS engine mispronounces — map to phonetic versions
+// Phonetic map for every spelling word so TTS pronounces them correctly
 const PRONUNCIATION_MAP = {
-  cemetery:    'sem ih tair ee',
-  rhythm:      'rith um',
-  mischievous: 'mis chuh vus',
-  conscience:  'kon shuns',
-  privilege:   'priv ih lij',
+  bicycle:     'by sih kul',
+  science:     'sy ents',
+  beautiful:   'byoo tih ful',
+  schedule:    'sked yool',
+  neighbor:    'nay ber',
+  special:     'spesh ul',
+  delicious:   'duh lish us',
+  receive:     'rih seev',
   knowledge:   'nol ij',
   island:      'eye lund',
-  schedule:    'sked yool',
-  guarantee:   'gair un tee',
-  exaggerate:  'ex aj er ate',
-  accommodate: 'uh kom uh date',
+  though:      'tho',
+  various:     'vair ee us',
+  exercise:    'ex er size',
+  government:  'guv ern ment',
+  environment: 'en vy run ment',
+  occasion:    'uh kay zhun',
+  separate:    'sep uh ret',
+  believe:     'buh leev',
   necessary:   'nes uh sair ee',
+  probably:    'prob ub lee',
+  cemetery:    'sem ih tair ee',
+  rhythm:      'rith um',
+  privilege:   'priv ih lij',
+  conscience:  'kon shuns',
+  accommodate: 'uh kom uh date',
+  exaggerate:  'ex aj er ate',
+  guarantee:   'gair un tee',
   lightning:   'lite ning',
+  mischievous: 'mis chuh vus',
+  recommend:   'rek uh mend',
 };
 
 function speakWord() {
