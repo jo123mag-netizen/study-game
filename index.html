@@ -429,7 +429,7 @@ input:focus { border-color: var(--accent); }
   <div class="card" style="text-align:center">
     <div style="font-size:4rem;margin-bottom:8px">🎉</div>
     <h2>Amazing!</h2>
-    <p id="kg-complete-msg" style="font-size:1.1rem;margin:16px 0"></p>
+    <p id="kg-complete-msg" style="font-size:1.1rem;margin:16px 0;white-space:pre-wrap"></p>
     <button class="btn btn-primary" onclick="startKGActivity(currentKGActivity)">Play Again</button>
     <button class="btn" onclick="show('kg-menu')">Try Another Activity</button>
     <button class="btn btn-small" onclick="show('grade-select')">← Choose Another Grade</button>
@@ -547,6 +547,7 @@ const GRADE_SUBJECTS = {
 let dark = false;
 let musicOn = true;
 let musicCtx = null, musicSource = null, musicGain = null;
+let musicLoopRunning = false;
 
 let selectedGrade = "";
 let selectedSubjectKey = "";
@@ -603,7 +604,8 @@ const MELODY = [
 ];
 
 function playMusicLoop() {
-  if (!musicCtx || !musicOn) return;
+  if (!musicCtx || !musicOn) { musicLoopRunning = false; return; }
+  musicLoopRunning = true;
   let t = musicCtx.currentTime + 0.05;
   let loopDur = 0;
   MELODY.forEach(([freq, dur]) => {
@@ -634,8 +636,10 @@ function toggleMusic() {
     btn.textContent = '🎵 Music: ON';
     btn.classList.add('music-on');
     if (!musicCtx) startMusic();
-    else if (musicCtx.state === 'suspended') musicCtx.resume();
-    else playMusicLoop();
+    else {
+      if (musicCtx.state === 'suspended') musicCtx.resume();
+      if (!musicLoopRunning) playMusicLoop();
+    }
   } else {
     btn.textContent = '🎵 Music: OFF';
     btn.classList.remove('music-on');
