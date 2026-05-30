@@ -702,7 +702,27 @@ function speak(text) {
   }, 150);
 }
 
-function speakWord()   { speak(currentSpellingWord); }
+// Words the TTS engine mispronounces — map to phonetic versions
+const PRONUNCIATION_MAP = {
+  cemetery:    'sem ih tair ee',
+  rhythm:      'rith um',
+  mischievous: 'mis chuh vus',
+  conscience:  'kon shuns',
+  privilege:   'priv ih lij',
+  knowledge:   'nol ij',
+  island:      'eye lund',
+  schedule:    'sked yool',
+  guarantee:   'gair un tee',
+  exaggerate:  'ex aj er ate',
+  accommodate: 'uh kom uh date',
+  necessary:   'nes uh sair ee',
+  lightning:   'lite ning',
+};
+
+function speakWord() {
+  const word = currentSpellingWord.toLowerCase();
+  speak(PRONUNCIATION_MAP[word] || currentSpellingWord);
+}
 function speakLetter() { speak(ALPHABET[kgLetterIndex]); }
 
 // ═══════════════════════════════════════════════════════════
