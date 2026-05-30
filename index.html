@@ -650,13 +650,20 @@ function toggleMusic() {
 // ═══════════════════════════════════════════════════════════
 //  TTS (Web Speech API — built into every browser, no install)
 // ═══════════════════════════════════════════════════════════
+let isSpeaking = false;
 function speak(text) {
-  if (!window.speechSynthesis) return;
+  if (!window.speechSynthesis || isSpeaking) return;
   window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.rate = 0.85;
-  u.pitch = 1.05;
-  window.speechSynthesis.speak(u);
+  isSpeaking = true;
+  setTimeout(() => {
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.78;
+    u.pitch = 1.0;
+    u.volume = 1.0;
+    u.onend  = () => { isSpeaking = false; };
+    u.onerror = () => { isSpeaking = false; };
+    window.speechSynthesis.speak(u);
+  }, 150);
 }
 
 function speakWord()   { speak(currentSpellingWord); }
