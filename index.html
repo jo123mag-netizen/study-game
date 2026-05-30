@@ -341,9 +341,6 @@ input:focus { border-color: var(--accent); }
     <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill"></div></div>
     <div id="quiz-passage" class="passage-box" style="display:none"></div>
     <div class="question-text" id="quiz-question"></div>
-    <div id="spelling-btn-wrap" style="display:none;margin-bottom:12px">
-      <button class="btn btn-small" onclick="speakWord()">🔊 Hear Word</button>
-    </div>
     <input type="text" id="quiz-answer" placeholder="Type your answer here…" onkeydown="if(event.key==='Enter')submitAnswer()">
     <button class="btn btn-primary" onclick="submitAnswer()">Submit Answer ✅</button>
   </div>
@@ -510,7 +507,6 @@ const BANKS = {
   g12_history:{"What was the Nuremberg Trials?":"trials of nazi war criminals after world war 2","What was the significance of the Bandung Conference 1955?":"first large gathering of asian and african nations promoting solidarity","What is neocolonialism?":"indirect control of developing nations through economic or political means","What was the significance of 1989 in world history?":"fall of the berlin wall and end of the cold war","What was the Rwandan Genocide?":"mass killing of the tutsi people by hutu extremists in 1994","What is globalisation?":"the process of countries becoming more interconnected economically and culturally","What was apartheid's impact on south african society?":"created deep racial inequality poverty and trauma","Who was Kwame Nkrumah?":"first president of ghana and leader of african independence movement"},
   g12_business:{"What is Porter's Five Forces?":"a framework analysing competitive forces in an industry","What is a SWOT analysis?":"analysis of strengths weaknesses opportunities and threats","What is the difference between fixed and variable costs?":"fixed costs do not change with output variable costs do","What is break-even analysis?":"finding the point where total revenue equals total costs","What is corporate social responsibility?":"a business taking responsibility for its social and environmental impact","What is a merger?":"when two companies combine to form one company","What is monetary policy?":"government control of money supply and interest rates","What is a multinational corporation?":"a company that operates in multiple countries","What is economies of scale?":"cost advantages from increasing the scale of production","What is the difference between debt and equity financing?":"debt is borrowing money equity is selling ownership shares"},
   g12_rs:{"What is existentialism and how does it relate to religion?":"a philosophy focusing on individual existence often questioning religious meaning","What is natural theology?":"knowledge of god derived from reason and nature rather than scripture","What is the ontological argument for god?":"god must exist because a perfect being must have the property of existence","What is agnosticism?":"the belief that the existence of god is unknown or unknowable","What is comparative religion?":"the study of similarities and differences between world religions","What is the cosmological argument?":"the universe must have a first cause which is god","What is the problem of evil in theology?":"if god is good and all-powerful why does evil exist","What is religious fundamentalism?":"strict literal interpretation of religious texts","What is secular ethics?":"a moral framework not based on religious principles"},
-  spelling:{words:["bicycle","science","beautiful","schedule","neighbor","special","delicious","receive","knowledge","island","though","various","exercise","government","environment","occasion","separate","believe","necessary","probably","cemetery","rhythm","privilege","conscience","accommodate","exaggerate","guarantee","lightning","mischievous","recommend"]},
   comprehension:{stories:[
     {passage:"Leo the lion loved to nap. He would find the shadiest tree and sleep for hours. One afternoon, a tiny mouse named Squeaky accidentally woke him up. Leo laughed and let the mouse go.",question:"What did Leo the lion love to do?",answer:"nap"},
     {passage:"Maya got a new bicycle for her birthday. It was bright red with a shiny silver bell. She couldn't wait to ride it to the park. Her dad helped her put on her helmet, and she practiced riding.",question:"What color was Maya's new bicycle?",answer:"red"},
@@ -527,12 +523,12 @@ const BANKS = {
 
 const GRADE_SUBJECTS = {
   "Kindergarten": null,
-  "Grade 1":  [{label:"📖 English / Literacy",key:"g13_english"},{label:"🧮 Mathematics",key:"g13_maths"},{label:"🔬 Science",key:"g13_science"},{label:"🌍 Social Studies",key:"g13_social"},{label:"🐝 Spelling Bee",key:"spelling"},{label:"📚 Comprehension",key:"comprehension"}],
-  "Grade 2":  [{label:"📖 English / Literacy",key:"g13_english"},{label:"🧮 Mathematics",key:"g13_maths"},{label:"🔬 Science",key:"g13_science"},{label:"🌍 Social Studies",key:"g13_social"},{label:"🐝 Spelling Bee",key:"spelling"},{label:"📚 Comprehension",key:"comprehension"}],
-  "Grade 3":  [{label:"📖 English / Literacy",key:"g13_english"},{label:"🧮 Mathematics",key:"g13_maths"},{label:"🔬 Science",key:"g13_science"},{label:"🌍 Social Studies",key:"g13_social"},{label:"🐝 Spelling Bee",key:"spelling"},{label:"📚 Comprehension",key:"comprehension"}],
-  "Grade 4":  [{label:"📖 English",key:"g46_english"},{label:"🧮 Mathematics",key:"g46_maths"},{label:"🔬 Science",key:"g46_science"},{label:"🌍 Social Studies",key:"g46_social"},{label:"🐝 Spelling Bee",key:"spelling"},{label:"📚 Comprehension",key:"comprehension"},{label:"🇧🇼 Botswana Culture",key:"botswana"},{label:"🌐 World Religions",key:"religions"}],
-  "Grade 5":  [{label:"📖 English",key:"g46_english"},{label:"🧮 Mathematics",key:"g13_maths"},{label:"🔬 Science",key:"g13_science"},{label:"🌍 Social Studies",key:"g13_social"},{label:"🌱 Agriculture",key:"g5_agriculture"},{label:"🐝 Spelling Bee",key:"spelling"},{label:"📚 Comprehension",key:"comprehension"},{label:"🇧🇼 Botswana Culture",key:"botswana"}],
-  "Grade 6":  [{label:"📖 English",key:"g46_english"},{label:"🧮 Mathematics",key:"g46_maths"},{label:"🔬 Science",key:"g46_science"},{label:"🌍 Social Studies",key:"g46_social"},{label:"🐝 Spelling Bee",key:"spelling"},{label:"📚 Comprehension",key:"comprehension"},{label:"🇧🇼 Botswana Culture",key:"botswana"},{label:"🌐 World Religions",key:"religions"}],
+  "Grade 1":  [{label:"📖 English / Literacy",key:"g13_english"},{label:"🧮 Mathematics",key:"g13_maths"},{label:"🔬 Science",key:"g13_science"},{label:"🌍 Social Studies",key:"g13_social"},{label:"📚 Comprehension",key:"comprehension"}],
+  "Grade 2":  [{label:"📖 English / Literacy",key:"g13_english"},{label:"🧮 Mathematics",key:"g13_maths"},{label:"🔬 Science",key:"g13_science"},{label:"🌍 Social Studies",key:"g13_social"},{label:"📚 Comprehension",key:"comprehension"}],
+  "Grade 3":  [{label:"📖 English / Literacy",key:"g13_english"},{label:"🧮 Mathematics",key:"g13_maths"},{label:"🔬 Science",key:"g13_science"},{label:"🌍 Social Studies",key:"g13_social"},{label:"📚 Comprehension",key:"comprehension"}],
+  "Grade 4":  [{label:"📖 English",key:"g46_english"},{label:"🧮 Mathematics",key:"g46_maths"},{label:"🔬 Science",key:"g46_science"},{label:"🌍 Social Studies",key:"g46_social"},{label:"📚 Comprehension",key:"comprehension"},{label:"🇧🇼 Botswana Culture",key:"botswana"},{label:"🌐 World Religions",key:"religions"}],
+  "Grade 5":  [{label:"📖 English",key:"g46_english"},{label:"🧮 Mathematics",key:"g13_maths"},{label:"🔬 Science",key:"g13_science"},{label:"🌍 Social Studies",key:"g13_social"},{label:"🌱 Agriculture",key:"g5_agriculture"},{label:"📚 Comprehension",key:"comprehension"},{label:"🇧🇼 Botswana Culture",key:"botswana"}],
+  "Grade 6":  [{label:"📖 English",key:"g46_english"},{label:"🧮 Mathematics",key:"g46_maths"},{label:"🔬 Science",key:"g46_science"},{label:"🌍 Social Studies",key:"g46_social"},{label:"📚 Comprehension",key:"comprehension"},{label:"🇧🇼 Botswana Culture",key:"botswana"},{label:"🌐 World Religions",key:"religions"}],
   "Grade 7":  [{label:"📖 English Language",key:"g79_english"},{label:"🧮 Mathematics",key:"g79_maths"},{label:"🔬 Integrated Science",key:"g79_science"},{label:"📜 History & Geography",key:"g79_history"},{label:"💻 ICT",key:"g79_ict"},{label:"🙏 Religious & Moral Ed",key:"g79_re"},{label:"🇧🇼 Botswana Culture",key:"botswana"}],
   "Grade 8":  [{label:"📖 English Language",key:"g79_english"},{label:"🧮 Mathematics",key:"g79_maths"},{label:"🔬 Integrated Science",key:"g79_science"},{label:"📜 History & Geography",key:"g79_history"},{label:"💻 ICT",key:"g79_ict"},{label:"🙏 Religious & Moral Ed",key:"g79_re"},{label:"🇧🇼 Botswana Culture",key:"botswana"}],
   "Grade 9":  [{label:"📖 English Language",key:"g79_english"},{label:"🧮 Mathematics",key:"g79_maths"},{label:"🔬 Integrated Science",key:"g79_science"},{label:"📜 History & Geography",key:"g79_history"},{label:"💻 ICT",key:"g79_ict"},{label:"🙏 Religious & Moral Ed",key:"g79_re"},{label:"🇧🇼 Botswana Culture",key:"botswana"}],
@@ -555,8 +551,6 @@ let selectedSubjectLabel = "";
 let questions = [];   // [{q, a, passage?}]
 let qIndex = 0;
 let score = 0;
-let currentSpellingWord = "";
-
 let kgLetterIndex = 0;
 let kgColourIndex = 0;
 let kgNumIndex = 0;
@@ -702,44 +696,6 @@ function speak(text) {
   }, 150);
 }
 
-// Phonetic map for every spelling word so TTS pronounces them correctly
-const PRONUNCIATION_MAP = {
-  bicycle:     'by sih kul',
-  science:     'sy ents',
-  beautiful:   'byoo tih ful',
-  schedule:    'sked yool',
-  neighbor:    'nay ber',
-  special:     'spesh ul',
-  delicious:   'duh lish us',
-  receive:     'rih seev',
-  knowledge:   'nol ij',
-  island:      'eye lund',
-  though:      'tho',
-  various:     'vair ee us',
-  exercise:    'ex er size',
-  government:  'guv ern ment',
-  environment: 'en vy run ment',
-  occasion:    'uh kay zhun',
-  separate:    'sep uh ret',
-  believe:     'buh leev',
-  necessary:   'nes uh sair ee',
-  probably:    'prob ub lee',
-  cemetery:    'sem ih tair ee',
-  rhythm:      'rith um',
-  privilege:   'priv ih lij',
-  conscience:  'kon shuns',
-  accommodate: 'uh kom uh date',
-  exaggerate:  'ex aj er ate',
-  guarantee:   'gair un tee',
-  lightning:   'lite ning',
-  mischievous: 'mis chuh vus',
-  recommend:   'rek uh mend',
-};
-
-function speakWord() {
-  const word = currentSpellingWord.toLowerCase();
-  speak(PRONUNCIATION_MAP[word] || currentSpellingWord);
-}
 function speakLetter() { speak(ALPHABET[kgLetterIndex]); }
 
 // ═══════════════════════════════════════════════════════════
@@ -812,10 +768,6 @@ function startQuiz() {
 
 function buildQuestions(key, n) {
   const bank = BANKS[key];
-  if (key === 'spelling') {
-    const words = shuffle([...bank.words]).slice(0, n);
-    return words.map(w => ({q:'Listen carefully and spell the word.', a:w, spelling:true, word:w}));
-  }
   if (key === 'comprehension') {
     const stories = shuffle([...bank.stories]).slice(0, n);
     return stories.map(s => ({q:s.question, a:s.answer, passage:s.passage}));
@@ -838,11 +790,6 @@ function displayQuestion() {
   else passageEl.style.display = 'none';
 
   document.getElementById('quiz-question').textContent = item.q;
-
-  // spelling TTS button
-  const spellWrap = document.getElementById('spelling-btn-wrap');
-  if (item.spelling) { currentSpellingWord = item.word; spellWrap.style.display = 'block'; }
-  else spellWrap.style.display = 'none';
 
   document.getElementById('quiz-answer').value = '';
   document.getElementById('quiz-answer').focus();
